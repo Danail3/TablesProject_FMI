@@ -1,122 +1,24 @@
 #include "Row.h"
 
-//void Row::resize(unsigned newCap)
-//{
-//	Value* newValues = new Value[newCap];
-//	for (size_t i = 0; i < valuesCount; i++)
-//	{
-//		newValues[i] = values[i];
-//	}
-//	delete[] values;
-//	values = newValues;//Tuka ne trqq triq, nali?
-//	capacity = newCap;
-//}
-
-void Row::setValues(const Vector<Value> newValues/*Value* newValues*//*, size_t capacity*/, size_t valuesCount)
+void Row::setValues(const Vector<Value> newValues)
 {
 	if (newValues.getSize() == 0)
 	{
 		throw std::invalid_argument("There are not any values!");//Kato catch-na greshkata da ne go pravi nishto toq red, t.e da ne go ostavq dori i prazen
 	}
-	//values = new Value[capacity];
-	for (size_t i = 0; i < valuesCount; i++)
-	{
-		values[i] = newValues[i];
-	}
+	values = newValues;
 }
 
-Row::Row(const Vector<Value> newValues/*const Value* newValues*//*, size_t capacity*/, size_t valuesCount)
+Row::Row(const Vector<Value> newValues)
 {
-	setValues(newValues ,valuesCount);
-	//this->capacity = capacity;
-	this->valuesCount = valuesCount;
+	setValues(newValues);// kato napisha std::move, to mi kazva, che ne trqq da go polzvam na const
+	//ako go polzvam, to v setValues pak trqq da ne e const, za da prilagam move=
 }
-
-//void Row::copyFrom(const Row& other)
-//{
-//	valuesCount = other.valuesCount;
-//	//capacity = other.capacity;
-//	values = new Value[valuesCount];
-//	for (size_t i = 0; i < valuesCount; i++)
-//	{
-//		values[i] = other.values[i];
-//	}
-//}
-
-//void Row::moveFrom(Row&& other)
-//{
-//	values = other.values;
-//	other.values = nullptr;
-//
-//	capacity = other.capacity;
-//	other.capacity = 0;
-//
-//	valuesCount = other.valuesCount;
-//	other.valuesCount = 0;
-//}
-//
-//void Row::free()
-//{
-//	delete[] values;
-//	values = nullptr;
-//	capacity = 0;
-//	valuesCount = 0;
-//}
-//
-//Row::Row(const Row& other)
-//{
-//	copyFrom(other);
-//}
-//
-//Row::Row(Row&& other) noexcept
-//{
-//	moveFrom(std::move(other));
-//}
-//
-//Row& Row::operator=(Row&& other) noexcept
-//{
-//	if (this != &other)
-//	{
-//		free();
-//		moveFrom(std::move(other));
-//	}
-//	return *this;
-//}
-//
-//Row& Row::operator=(const Row& other)
-//{
-//	if (this != &other)
-//	{
-//		free();
-//		copyFrom(other);
-//	}
-//	return *this;
-//}
-//
-//Row::~Row()
-//{
-//	free();
-//}
 
 const Vector<Value>& Row::getValues() const {
 	return values;
 }
 
-size_t Row::getValuesCount() const
-{
-	return valuesCount;
-}
-
-//void Row::resize(size_t newCap) {
-//	Value* newValues = new Value[newCap];
-//	for (size_t i = 0; i < valuesCount; i++)
-//	{
-//		newValues[i] = values[i];
-//	}
-//	delete[] values;
-//	values = newValues;
-//	capacity = newCap;
-//}
 void Row::readRow(std::fstream& fs)
 {
 	const static int MAX_LENGTH_ROW = 1024;
@@ -126,18 +28,11 @@ void Row::readRow(std::fstream& fs)
 
 	while (!ss.eof())
 	{
-		/*if (valuesCount == capacity)
-		{
-			resize(2 * capacity);
-		}*/
-		size_t& valuesCount = this->valuesCount;
 		char currWord[MAX_LENGTH_ROW]{};
 		ss.getline(currWord, MAX_LENGTH_ROW, ',');
 		Value currValue(currWord);
 		values.pushBack(std::move(currValue));
-		valuesCount++;
-		//values[valuesCount++].setValue(currWord);
-		std::cout << values[valuesCount - 1].getString();
+		std::cout << values[values.getSize() - 1].getString();
 	}
 }
 

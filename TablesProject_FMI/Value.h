@@ -5,7 +5,6 @@
 class Value {
 	MyString str;
 	Types type;
-	//unsigned length;
 
 	int tryParseToInt();
 	double tryParseToDouble();
@@ -23,6 +22,8 @@ public:
 	Value(const MyString& str);
 	const MyString& getString() const;
 	void setValue(const MyString& str);
+
+	int calculateFormula() const;
 
 	Types getType() const;
 };
