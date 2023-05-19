@@ -1,7 +1,4 @@
 #include "MyString.h"
-#pragma warning (disable:4996)
-
-//Taken from Dimitriev's repository
 
 MyString::MyString(size_t capacity)
 {
@@ -18,6 +15,21 @@ MyString operator+(const MyString& lhs, const MyString& rhs)
 	strcat(result._data, rhs._data);
 
 	return result;
+}
+
+MyString& MyString::operator+=(char ch)
+{
+	char* result = new char[(_length += 1) + 1];
+	result[0] = '\0';
+	strcat(result, _data);
+	result[_length - 1] = ch;
+	result[_length] = '\0';
+	//strcat(result, other._data);
+
+	delete[] _data;
+	_data = result;
+
+	return *this;
 }
 
 MyString& MyString::operator+=(const MyString& other)
@@ -84,7 +96,7 @@ void MyString::copyFrom(const MyString& other)
 
 MyString::MyString(MyString&& other) noexcept
 {
-	_data = other._data;
+	_data = other._data; // to function moveFrom ?
 	other._data = nullptr;
 	_length = other._length;
 }
@@ -101,12 +113,12 @@ MyString& MyString::operator=(MyString&& other) noexcept
 	return *this;
 }
 
-char& MyString::operator[](size_t index)
+char& MyString::operator[](size_t index) //Неконстантен достъп
 {
 	return _data[index];
 }
 
-char MyString::operator[](size_t index) const 
+char MyString::operator[](size_t index) const //Константен достъп 
 {
 	return _data[index];
 }
@@ -137,7 +149,7 @@ std::ostream& operator<<(std::ostream& os, const MyString& str)
 std::istream& operator>>(std::istream& is, MyString& str)
 {
 	char buff[1024];
-	is >> buff;
+	is >> buff; // is.getLine(buff, 1024);
 
 	delete[] str._data;
 	str._length = strlen(buff);
@@ -171,4 +183,12 @@ bool operator==(const MyString& lhs, const MyString& rhs)
 bool operator!=(const MyString& lhs, const MyString& rhs)
 {
 	return strcmp(lhs.c_str(), rhs.c_str()) != 0;
+}
+bool operator!=(const MyString& lhs, char ch)
+{
+	return lhs[0] != ch;
+}
+bool operator==(const MyString& lhs, char ch)
+{
+	return lhs[0] == ch;
 }

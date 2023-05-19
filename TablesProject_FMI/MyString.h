@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable:4996)
+
 #include <iostream>
 
 //Taken from Dimitriev's repository
@@ -11,13 +13,14 @@ class MyString
 	void copyFrom(const MyString& data);
 	void free();
 
-	explicit MyString(size_t capacity);
 public:
 
 	MyString();
 	MyString(const char* data);
+	explicit MyString(size_t capacity);
 	MyString(const MyString& other);
 	MyString& operator=(const MyString& other);
+
 	~MyString();
 
 	MyString(MyString&& other) noexcept;
@@ -25,6 +28,7 @@ public:
 
 	size_t length() const;
 	MyString& operator+=(const MyString& other);
+	MyString& operator+=(char ch);
 
 	MyString substr(size_t begin, size_t howMany) const;
 
@@ -45,3 +49,5 @@ bool operator>=(const MyString& lhs, const MyString& rhs);
 bool operator>(const MyString& lhs, const MyString& rhs);
 bool operator==(const MyString& lhs, const MyString& rhs);
 bool operator!=(const MyString& lhs, const MyString& rhs);
+bool operator!=(const MyString& lhs, char ch);
+bool operator==(const MyString& lhs, char ch);
