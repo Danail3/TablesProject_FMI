@@ -6,24 +6,29 @@ class Value {
 	MyString str;
 	Types type;
 
-	int tryParseToInt();
-	double tryParseToDouble();
-	bool isValidString(const MyString& str); //Tiq mai ne trqq sa mi v klasa
-	bool isValidFormula(const MyString& str); //
-	bool isNumber(const MyString& str); //
-	bool isDouble(const MyString& str); //
-	bool isCell(const MyString& str); //
+	
 
 	bool isValid(const MyString& str);
 	void determineType();
 	void removeSpaces(MyString& str);
 public:
+
+	
+
 	Value();
 	Value(const MyString& str);
 	const MyString& getString() const;
 	void setValue(const MyString& str);
 
-	int calculateFormula() const;
+	double calculateFormula() const;
 
 	Types getType() const;
 };
+
+//int tryParseToInt(const MyString& str);
+//double tryParseToDouble(const MyString& str);
+//bool isValidString(const MyString& str); //Tiq mai ne trqq sa mi v klasa
+//bool isValidFormula(const MyString& str); //
+//bool isNumber(const MyString& str); //
+//bool isDouble(const MyString& str); //
+bool isCell(const MyString& str); //

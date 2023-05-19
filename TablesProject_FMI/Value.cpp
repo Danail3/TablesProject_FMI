@@ -14,7 +14,7 @@ static unsigned countSymbols(const MyString& str)
 	return counter;
 }
 
-bool Value::isCell(const MyString& str)
+bool isCell(const MyString& str)// ne go pravq static, shtot mi trqq v table.cpp kat smqtam formulata
 {
 	if (str[0] == 'R' && str[2] == 'C')
 	{
@@ -27,7 +27,7 @@ bool Value::isCell(const MyString& str)
 		return false;
 }
 
-bool Value::isDouble(const MyString& str)
+static bool isDouble(const MyString& str)
 {
 	if (countSymbols(str) > 2 || countSymbols(str) == 0)
 	{
@@ -62,7 +62,7 @@ bool Value::isDouble(const MyString& str)
 	return true;
 }
 
-bool Value::isNumber(const MyString& str)
+static bool isNumber(const MyString& str)
 {
 	bool isNum = isDouble(str);
 	if (isNum)
@@ -86,7 +86,7 @@ bool Value::isNumber(const MyString& str)
 }
 
 
-int Value::tryParseToInt()
+static int tryParseToInt(const MyString& str)
 {
 
 	int result = 0;
@@ -109,7 +109,7 @@ int Value::tryParseToInt()
 	for (index; index < str.length(); index++)
 	{
 		result *= 10;
-		result += str[index];
+		result += str[index] - '0';
 	}
 	if (str[0] == '-')
 	{
@@ -118,7 +118,7 @@ int Value::tryParseToInt()
 	return result;
 }
 
-double Value::tryParseToDouble()
+static double tryParseToDouble(const MyString& str) 
 {
 	double result = 0;
 	int howManyDigitsAfterDot = 1;
@@ -161,7 +161,7 @@ double Value::tryParseToDouble()
 	return (result / howManyDigitsAfterDot);
 }
 
-bool Value::isValidString(const MyString& str)
+static bool isValidString(const MyString& str) 
 {
 	if (str[0] == '"' && str[str.length() - 1] == '"')
 	{
@@ -170,7 +170,7 @@ bool Value::isValidString(const MyString& str)
 	return false;
 }
 
-bool Value::isValidFormula(const MyString& str)
+static bool isValidFormula(const MyString& str) 
 {
 	std::stringstream line(str.c_str());
 	char buff[64]{};
