@@ -16,18 +16,32 @@ static unsigned countSymbols(const MyString& str)
 
 bool isCell(const MyString& str)// ne go pravq static, shtot mi trqq v table.cpp kat smqtam formulata
 {
-	if (str[0] == 'R' && str[2] == 'C')
+	int i = 2;
+	bool cOccured = false;
+	if (str[0] == 'R' && (str[1] >= '1' && str[1] <= '9')/* && str[2] == 'C'*/)
 	{
-		if ((str[1] >= '0' && str[1] <= '9') && (str[3] >= '0' && str[3] <= '9'))
-			return true;
-		else
+		while (str[i] != '\0')/*) && (str[3] >= '0' && str[3] <= '9')*/
+		{
+			if ((str[i] < '0' || str[i] > '9') && str[i] != 'C')
+			{
+				return false;
+			}
+			if (str[i] == 'C')
+			{
+				cOccured = true;
+			}
+			i++;
+		}
+		if (!cOccured)
 			return false;
+		else
+			return true;
 	}
 	else
 		return false;
 }
 
-static bool isDouble(const MyString& str)
+bool isDouble(const MyString& str)
 {
 	if (countSymbols(str) > 2 || countSymbols(str) == 0)
 	{
@@ -62,7 +76,7 @@ static bool isDouble(const MyString& str)
 	return true;
 }
 
-static bool isNumber(const MyString& str)
+bool isNumber(const MyString& str)
 {
 	bool isNum = isDouble(str);
 	if (isNum)
@@ -86,7 +100,7 @@ static bool isNumber(const MyString& str)
 }
 
 
-static int tryParseToInt(const MyString& str)
+int tryParseToInt(const MyString& str)
 {
 
 	int result = 0;
@@ -118,7 +132,7 @@ static int tryParseToInt(const MyString& str)
 	return result;
 }
 
-static double tryParseToDouble(const MyString& str) 
+double tryParseToDouble(const MyString& str)
 {
 	double result = 0;
 	int howManyDigitsAfterDot = 1;
@@ -161,7 +175,7 @@ static double tryParseToDouble(const MyString& str)
 	return (result / howManyDigitsAfterDot);
 }
 
-static bool isValidString(const MyString& str) 
+bool isValidString(const MyString& str)
 {
 	if (str[0] == '"' && str[str.length() - 1] == '"')
 	{
@@ -170,7 +184,7 @@ static bool isValidString(const MyString& str)
 	return false;
 }
 
-static bool isValidFormula(const MyString& str) 
+bool isValidFormula(const MyString& str)
 {
 	std::stringstream line(str.c_str());
 	char buff[64]{};
@@ -205,13 +219,15 @@ static bool isValidFormula(const MyString& str)
 	}
 }
 
-bool Value::isValid(const MyString& str)
+bool isValid(MyString& str)
 {
-	if (isNumber(str) || isValidFormula(str) || isValidString(str))
+	removeSpaces(str);
+	if (isNumber(str) || isValidFormula(str) || isValidString(str) || str == "")
 	{
 		return true;
 	}
-	return false;
+	throw std::invalid_argument(" is invalid data type!");
+	//return false;
 }
 
 void Value::determineType()
@@ -236,12 +252,15 @@ void Value::determineType()
 	{
 		type = Types::empty;
 	}
-	else {
+	else
+	{
+		//str = "Invalid";
 		type = Types::invalid;
+		//throw std::invalid_argument("");
 	}
 }
 
-void Value::removeSpaces(MyString& str)
+void removeSpaces(MyString& str)
 {
 	int index = 0;
 	while (str[index] == ' ')
@@ -269,13 +288,15 @@ void Value::setValue(const MyString& str)
 {
 	MyString newStr(str);
 	removeSpaces(newStr);
-	if (isValid(newStr))
+	/*try
 	{
-		this->str = newStr;
+		isValid(str);
 	}
-	else {
-		this->str = "";
-	}
+	catch (const std::exception&)
+	{
+		throw std::invalid_argument("Invalid Argument!");
+	}*/
+	this->str = newStr;
 	determineType();
 }
 

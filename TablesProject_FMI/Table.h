@@ -15,7 +15,7 @@ class Table {
 	void fillArrayWithLenghtOfEachRow(Row& row, Vector<int>& arr) const;
 	void getMaxLengthFromEachColumn(Vector<int>& arr);
 	unsigned getMaxValueInRows() const;
-	void addSpaces(int& conditionValue) const;
+	void addSpaces(int conditionValue) const;
 	void printRow(const Row& row, Vector<int>& numberOfSpaces) const;
 
 

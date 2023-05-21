@@ -33,9 +33,7 @@ void Table::fillArrayWithLenghtOfEachRow(Row& row, Vector<int>& arr) const
 		int lengthValue = 0;
 		if (row.getValues()[i - 1].getType() == Types::formula)
 		{
-			//Value newValue(row.getValues()[i - 1].getString());
 			calculateFormula(row[i - 1]);
-			//lengthValue = newValue.getString().length();//getLengthOfDouble
 		}
 		lengthValue = row.getValues()[i - 1].getString().length();
 		if (row.getValues().getSize() > arr.getSize() && (i > arr.getSize() || arr.getSize() == 0))
@@ -76,11 +74,23 @@ Table::Table(Vector<Row>& newRows)
 void Table::exportDataFromFile(std::fstream& fs)
 {
 	size_t index = 0;
+	size_t rowIndex = 0;
 	while (!fs.eof())
 	{
 		Row currRow;
-		currRow.readRow(fs);
-		rows.pushBack(currRow);
+		rowIndex++;
+		try
+		{
+			currRow.readRow(fs, rowIndex);
+			rows.pushBack(currRow);
+
+		}
+		catch (const std::exception& exe)
+		{
+			std::cout << "On line " << rowIndex << exe.what() << std::endl;
+			std::cout << "Line " << rowIndex << " will not be printed!" << std::endl;
+		}
+
 	}
 	return;
 }
@@ -95,12 +105,23 @@ void Table::saveDataToFile(std::fstream& fs) const
 
 void Table::editCell(size_t numberRow, size_t numberColumn, const MyString& str)
 {
-	int index = rows[numberRow].getValues().getSize();
-	if (numberRow > rows.getSize() || numberColumn > index)
+	int index = rows[numberRow - 1].getValues().getSize();
+	if (numberRow - 1 > rows.getSize() || numberColumn - 1 > index || numberRow < 1 || numberColumn < 1)
 	{
 		throw std::invalid_argument("Invalid index!");
 	}
-	rows[numberRow][numberColumn].setValue(str);
+	MyString currStr(str);
+	try
+	{
+		//removeSpaces(currStr);
+		isValid(currStr);
+		rows[numberRow - 1][numberColumn - 1].setValue(currStr);
+	}
+	catch (const std::invalid_argument& exe)
+	{
+		std::cout << currStr << exe.what() << std::endl;
+		//currStr = std::move("Invalid");//shto da ne izpozlvam move na const variables
+	}
 }
 
 bool checkIfStringIsNumber(const MyString& str)
@@ -115,13 +136,49 @@ bool checkIfStringIsNumber(const MyString& str)
 	return true;
 }
 
+static void getIndex(const MyString& str, size_t& index)
+{	
+	size_t ind = 1;
+	while (str[ind] != 'C')
+	{
+		index *= 10;
+		index += (str[ind] - '0');
+		ind++;
+	}
+}
+
+static void getSecondIndex(const MyString& str, size_t& index)
+{
+	size_t ind = 1;
+	while (str[ind] != 'C')
+	{
+		ind++;
+	}
+	++ind;
+	while (str[ind] != '\0')
+	{
+		index *= 10;
+		index += (str[ind] - '0');
+		ind++;
+	}
+}
+
 void Table::getValueFromCell(MyString& str) const
 {
-
 	double resultCell = 0;
-	int ind1 = str[1] - '0';
-	int ind2 = str[3] - '0';
-	str = rows[ind1 - 1][ind2 - 1].getString();
+
+	size_t ind1 = 0, ind2 = 0;
+	getIndex(str, ind1);
+	getSecondIndex(str, ind2);
+	try
+	{
+		str = rows[ind1 - 1][ind2 - 1].getString();
+	}
+	catch (const std::exception&)
+	{
+		str = "0";
+	}
+
 	if (!isNumber(str))
 	{
 		if (!checkIfStringIsNumber(str))
@@ -216,7 +273,6 @@ MyString Table::infixToPostfix(const MyString& s, Vector<double>& doubleArr, Vec
 			operations.pushBack(result[i]);
 		}
 	}
-	//std::cout << result << std::endl;
 	return result;
 }
 
@@ -248,7 +304,7 @@ double Table::getResult(char ch, double num1, double num2) const
 	case '/':
 		if (num2 == 0)
 		{
-			throw std::invalid_argument("Operation cannot be done!"); //da q catch-na kat printq
+			throw std::invalid_argument("Operation cannot be done. The divisor is equal to 0. "); //da q catch-na kat printq
 		}
 		return num1 / num2;
 	default:
@@ -303,7 +359,7 @@ void Table::calculateFormula(Value& value) const
 		catch (const std::invalid_argument& exe)
 		{
 			std::cout << exe.what() << std::endl;
-			value.setValue("\"ERROR\"");
+			value.setValue("ERROR");
 			return;
 		}
 		
@@ -316,7 +372,7 @@ void Table::calculateFormula(Value& value) const
 	changeTheValueOfFormula(nums[0], value);
 }
 
-void Table::addSpaces(int& conditionValue) const
+void Table::addSpaces(int conditionValue) const
 {
 	while (conditionValue != 0)
 	{
@@ -340,11 +396,17 @@ unsigned Table::getMaxValueInRows() const
 }
 
 void Table::printRow(const Row& row, Vector<int>& numberOfSpaces) const {
+	for (size_t i = 0; i < numberOfSpaces.getSize(); i++)
+	{
+		std::cout << numberOfSpaces[i];
+
+	}
+	size_t sizeOfValuesInRow = row.getValues().getSize();
 	if (row.getValues().getSize() != 0)
 	{
 		std::cout << "| ";
 	}
-	for (size_t i = 0; i < row.getValues().getSize(); i++)
+	for (size_t i = 0; i < sizeOfValuesInRow; i++)
 	{
 		int copyNumberOfSpaces = numberOfSpaces[i];
 		int spacesTaken = row.getValues()[i].getString().length();
@@ -352,16 +414,33 @@ void Table::printRow(const Row& row, Vector<int>& numberOfSpaces) const {
 		addSpaces(spacesLeftToPrint);
 		std::cout << row.getValues()[i].getString();
 
-		if (i != row.getValues().getSize() - 1)
+		if (i == numberOfSpaces.getSize() - 1)
+		{
+			std::cout << " |";
+			std::cout << std::endl;
+			break;
+		}
+		std::cout << " | ";
+	}
+	for (size_t i = sizeOfValuesInRow + 1; i <= numberOfSpaces.getSize(); i++)
+	{
+		//std::cout << " | ";
+		addSpaces(numberOfSpaces[i - 1]);
+		if (i == numberOfSpaces.getSize())
+		{
+			std::cout << " |";
+			std::cout << std::endl;
+		}
+		else
 		{
 			std::cout << " | ";
 		}
 	}
-	if (row.getValues().getSize() != 0)
-	{
-		std::cout << " |";
-		std::cout << std::endl;
-	}
+
+	//if (row.getValues().getSize() != 0)
+	//{
+
+	//}
 }
 
 void Table::printTable() {
