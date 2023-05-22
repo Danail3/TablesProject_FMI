@@ -92,7 +92,8 @@ void Table::exportDataFromFile(std::fstream& fs)
 		}
 
 	}
-	return;
+	std::cout << "Table loaded!" << std::endl;
+	//return;
 }
 
 void Table::saveDataToFile(std::fstream& fs) const
@@ -100,6 +101,13 @@ void Table::saveDataToFile(std::fstream& fs) const
 	for (size_t i = 0; i < rows.getSize(); i++)
 	{
 		rows[i].saveRow(fs);
+	}
+}
+void Table::saveDataToFile(std::ofstream& ofs) const
+{
+	for (size_t i = 0; i < rows.getSize(); i++)
+	{
+		rows[i].saveRow(ofs);
 	}
 }
 
@@ -396,11 +404,11 @@ unsigned Table::getMaxValueInRows() const
 }
 
 void Table::printRow(const Row& row, Vector<int>& numberOfSpaces) const {
-	for (size_t i = 0; i < numberOfSpaces.getSize(); i++)
-	{
-		std::cout << numberOfSpaces[i];
+	//for (size_t i = 0; i < numberOfSpaces.getSize(); i++)
+	//{
+	//	std::cout << numberOfSpaces[i];
 
-	}
+	//}
 	size_t sizeOfValuesInRow = row.getValues().getSize();
 	if (row.getValues().getSize() != 0)
 	{

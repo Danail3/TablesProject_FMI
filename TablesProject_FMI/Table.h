@@ -33,6 +33,7 @@ public:
 	void printTable();
 	void exportDataFromFile(std::fstream& fs);
 	void saveDataToFile(std::fstream& fs) const;
+	void saveDataToFile(std::ofstream& ofs) const;
 
 	void editCell(size_t numberRow, size_t numberColumn, const MyString& str);
 };
