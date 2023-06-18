@@ -1,35 +1,18 @@
 #pragma once
-#include "GlobalConstants.h"
-//#include "MyString.h"
+#include "Helper.h"
 
 class Value {
 	MyString str;
 	Types type;
+	void determineType();//trqq mi e tuka, shot kat suzdavam obekti i to go suzdava prez constuctor-a na value, koito mi polzva determine type
 
-	
-
-	void determineType();
 public:
-
-	
-
 	Value();
 	Value(const MyString& str);
-	const MyString& getString() const;
+	virtual const MyString& getString() const;
 	void setValue(const MyString& str);
-
-	double calculateFormula() const;
-
 	Types getType() const;
+
+	virtual Value* clone() const = 0;
+	virtual ~Value() = default;
 };
-
-int tryParseToInt(const MyString& str);
-double tryParseToDouble(const MyString& str);
-bool isValidString(const MyString& str); //Tiq mai ne trqq sa mi v klasa
-bool isValidFormula(const MyString& str); //
-bool isNumber(const MyString& str); //
-bool isDouble(const MyString& str); //
-bool isCell(const MyString& str); //
-bool isValid(MyString& str);
-void removeSpaces(MyString& str);
-
