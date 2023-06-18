@@ -17,11 +17,12 @@ private:
 	void downsizeIfNeeded();
 public:
 	Vector();
+	//Vector(const MyString& str);
 	Vector(size_t capacity);
 	Vector(const Vector<T>& other);
 	Vector(Vector<T>&& other);
 	Vector<T>& operator=(const Vector<T>& other);
-	Vector<T>& operator=(Vector<T>&& other);
+	Vector<T>& operator=(Vector<T>&& other) noexcept;
 	~Vector();
 
 	size_t getSize() const;
@@ -52,6 +53,18 @@ namespace {
 	const short INITIAL_CAPACITY = 4;
 	const short RESIZE_COEF = 2; // the most optimal is between 1.4 and 1.5
 }
+//template<typename T>
+//Vector<T>::Vector(const MyString & str) 
+//{
+//	if (data != nullptr)
+//	{
+//		delete[] data;
+//	}
+//	data = new char[strlen(str) + 1] {};
+//	strcpy(data, str.c_str());
+//	size = strlen(str);
+//	capacity = size;
+//}
 
 template<typename T>
 Vector<T>::Vector() : Vector(INITIAL_CAPACITY) { }
@@ -82,7 +95,7 @@ Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
 }
 
 template<typename T>
-Vector<T>& Vector<T>::operator=(Vector<T>&& other) {
+Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept{
 	if (this != &other) {
 		free();
 		move(std::move(other));
@@ -98,8 +111,8 @@ Vector<T>::~Vector() {
 
 template<typename T>
 void Vector<T>::assertIndex(size_t index) const {
-	if (index >= size) {
-		throw std::exception("Out of range");
+	if (index > size) {
+		throw std::exception("Out of range!");
 	}
 }
 
