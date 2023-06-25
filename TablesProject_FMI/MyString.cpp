@@ -113,12 +113,12 @@ MyString& MyString::operator=(MyString&& other) noexcept
 	return *this;
 }
 
-char& MyString::operator[](size_t index) //РќРµРєРѕРЅСЃС‚Р°РЅС‚РµРЅ РґРѕСЃС‚СЉРї
+char& MyString::operator[](size_t index) //Неконстантен достъп
 {
 	return _data[index];
 }
 
-char MyString::operator[](size_t index) const //РљРѕРЅСЃС‚Р°РЅС‚РµРЅ РґРѕСЃС‚СЉРї 
+char MyString::operator[](size_t index) const //Константен достъп 
 {
 	return _data[index];
 }
